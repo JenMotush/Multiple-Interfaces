@@ -1,0 +1,184 @@
+using System;
+using System.Collections.Generic;
+
+namespace Inheritance16
+{
+		public class Program
+		{
+			public static void Main()
+			{
+				var appointment = new Appointment() 
+				{
+					Name = "Bob",
+					StartDateTime = DateTime.Now.AddHours(1),
+					EndDateTime = DateTime.Now.AddHours(2), 
+					Price = 100D
+				};
+				
+				var book = new Book()
+				{
+					Title = "How to Implement Interfaces",
+					Price = 50D, 
+					TaxRate = 0.0825D
+				};
+				
+				var snack = new Snack()
+				{
+					Price = 2D
+				};
+				
+				var tshirt = new TShirt()
+				{
+					Price = 25D, 
+					Size = "2X",
+					TaxRate = 0.0625D
+				};
+					
+				
+				var items = new List<IPurchasable>();
+				items.Add(appointment);
+				items.Add(book);
+				items.Add(snack);
+				items.Add(tshirt);
+				
+				var taxable = new List<ITaxable>();
+				
+				foreach (var item in items)
+				{
+					if (item is ITaxable)
+					{
+						taxable.Add(item as ITaxable);
+					}
+				}
+				
+				var taxAmount = CalculateTax(taxable);
+				
+				Console.WriteLine(String.Format("Total Tax Amount {0}", taxAmount.ToString("C0")));
+				
+				CompleteTransaction(items);
+				
+				
+				Console.ReadLine();
+				
+			}
+			
+			static double CalculateTax(List<ITaxable> items)
+			{
+				double tax = 0D;
+				
+				foreach( var item in items)
+				{
+					tax += item.Tax();
+				}
+				
+				return tax;
+			}
+			
+			static double CalculateShipping(List<IShippable> items)
+			{
+				double shipping = 0D;
+				return shipping;
+			}
+
+			static void CompleteTransaction(List<IPurchasable> items)
+			{
+				items.ForEach(p => p.Purchase());
+
+			}
+		}
+
+		public class Appointment : IPurchasable
+		{
+			public string Name {get; set;}
+			public DateTime StartDateTime {get; set;}
+			public DateTime EndDateTime {get; set;}
+			public double Price {get; set;}
+			
+			public void Purchase()
+			{
+				Console.WriteLine(String.Format("Appointment for {0}, from {1} - {2}", Name, StartDateTime, EndDateTime));
+			}
+			
+		}
+
+		public class Book : IPurchasable, ITaxable
+		{
+			public string Title {get; set;}	
+			public double Price {get; set;}
+			public double TaxRate {get;set;}
+			
+			public void Purchase()
+			{
+				Console.WriteLine(String.Format("{0} for {1}", Title, Price.ToString(("C0"))));
+			
+			}
+			
+			public double Tax()
+			{
+				var tax = Price * TaxRate; 
+				Console.WriteLine(String.Format("     TaxRate:{0} = {1}", TaxRate, tax));
+				return tax;
+			}
+			
+		}
+		
+	public class Snack : IPurchasable
+	{
+			public double Price {get; set;}
+			//public double TaxRate {get;set;}
+			
+			public void Purchase()
+			{
+				Console.WriteLine(String.Format("Purchasing a snack for {0}", Price.ToString(("C0"))));
+			
+			}
+			
+			//public double Tax()
+			//{
+			//	var tax = Price * TaxRate;
+			//	Console.WriteLine(String.Format("     TaxRate:{0} = {1}", TaxRate, tax));
+			//	return tax;
+			//}
+	}
+	
+	public class TShirt : IPurchasable, ITaxable
+	{
+		public double Price {get;set;}
+		public string Size {get;set;}
+		public double TaxRate {get;set;}
+		
+		public void Purchase()
+			{
+				Console.WriteLine(String.Format("Purchasing a tshirt for {0} in a {1} size", Price.ToString("C0"), Size));
+			
+			}
+			
+			public double Tax()
+			{
+				var tax = Price * TaxRate;
+				Console.WriteLine(String.Format("     TaxRate:{0} = {1}", TaxRate, tax));
+				return tax;
+			}
+	}
+	
+	interface IPurchasable
+	{
+		double Price {get;set;}
+		
+		void Purchase();
+	}
+	
+	interface ITaxable
+	{
+		double TaxRate {get;set;}	
+		
+		double Tax();
+	}
+	
+	interface IShippable
+	{
+		double ShippingRate {get;set;}
+		
+		double Shipping();
+	}	
+}

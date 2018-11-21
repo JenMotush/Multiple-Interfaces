@@ -19,7 +19,8 @@ namespace Inheritance16
 				{
 					Title = "How to Implement Interfaces",
 					Price = 50D, 
-					TaxRate = 0.0825D
+					TaxRate = 0.0825D, 
+					ShippingRate = 5D
 				};
 				
 				var snack = new Snack()
@@ -31,7 +32,8 @@ namespace Inheritance16
 				{
 					Price = 25D, 
 					Size = "2X",
-					TaxRate = 0.0625D
+					TaxRate = 0.0625D,
+					ShippingRate = 2D
 				};
 					
 				
@@ -43,17 +45,26 @@ namespace Inheritance16
 				
 				var taxable = new List<ITaxable>();
 				
+				var shipable = new List<IShippable>();
+				
 				foreach (var item in items)
 				{
 					if (item is ITaxable)
 					{
 						taxable.Add(item as ITaxable);
-					}
+					};
+					
+					if	(item is IShippable)
+					{
+						shipable.Add(item as IShippable);
+					};
 				}
 				
 				var taxAmount = CalculateTax(taxable);
+				var shipAmount = CalculateShipping(shipable);
 				
 				Console.WriteLine(String.Format("Total Tax Amount {0}", taxAmount.ToString("C0")));
+				Console.WriteLine(String.Format("Total Shipping Amount {0}", shipAmount.ToString("C0")));
 				
 				CompleteTransaction(items);
 				
@@ -77,6 +88,11 @@ namespace Inheritance16
 			static double CalculateShipping(List<IShippable> items)
 			{
 				double shipping = 0D;
+				
+				foreach(var item in items)
+				{
+					shipping += item.Shipping();
+				}
 				return shipping;
 			}
 
@@ -101,11 +117,12 @@ namespace Inheritance16
 			
 		}
 
-		public class Book : IPurchasable, ITaxable
+		public class Book : IPurchasable, ITaxable, IShippable
 		{
 			public string Title {get; set;}	
 			public double Price {get; set;}
 			public double TaxRate {get;set;}
+			public double ShippingRate {get;set;}
 			
 			public void Purchase()
 			{
@@ -120,6 +137,13 @@ namespace Inheritance16
 				return tax;
 			}
 			
+			public double Shipping()
+			{
+				var shipping = Price + ShippingRate;
+				Console.WriteLine(String.Format("     :{0} = {1}", ShippingRate, shipping));
+				return shipping;
+			}
+			
 		}
 		
 	public class Snack : IPurchasable
@@ -132,20 +156,14 @@ namespace Inheritance16
 				Console.WriteLine(String.Format("Purchasing a snack for {0}", Price.ToString(("C0"))));
 			
 			}
-			
-			//public double Tax()
-			//{
-			//	var tax = Price * TaxRate;
-			//	Console.WriteLine(String.Format("     TaxRate:{0} = {1}", TaxRate, tax));
-			//	return tax;
-			//}
 	}
 	
-	public class TShirt : IPurchasable, ITaxable
+	public class TShirt : IPurchasable, ITaxable, IShippable
 	{
 		public double Price {get;set;}
 		public string Size {get;set;}
 		public double TaxRate {get;set;}
+		public double ShippingRate {get;set;}
 		
 		public void Purchase()
 			{
@@ -158,6 +176,13 @@ namespace Inheritance16
 				var tax = Price * TaxRate;
 				Console.WriteLine(String.Format("     TaxRate:{0} = {1}", TaxRate, tax));
 				return tax;
+			}
+			
+			public double Shipping()
+			{
+				var shipping = Price + ShippingRate;
+				Console.WriteLine(String.Format("     :{0} = {1}", ShippingRate, shipping));
+				return shipping;
 			}
 	}
 	

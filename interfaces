@@ -20,7 +20,7 @@ namespace Inheritance16
 					Title = "How to Implement Interfaces",
 					Price = 50D, 
 					TaxRate = 0.0825D, 
-					ShippingRate = 5D
+					ShippingRate = 5.00D
 				};
 				
 				var snack = new Snack()
@@ -33,7 +33,7 @@ namespace Inheritance16
 					Price = 25D, 
 					Size = "2X",
 					TaxRate = 0.0625D,
-					ShippingRate = 2D
+					ShippingRate = 2.00D
 				};
 					
 				
@@ -63,8 +63,12 @@ namespace Inheritance16
 				var taxAmount = CalculateTax(taxable);
 				var shipAmount = CalculateShipping(shipable);
 				
+				var grandTotal = taxAmount + shipAmount;
+				
 				Console.WriteLine(String.Format("Total Tax Amount {0}", taxAmount.ToString("C0")));
 				Console.WriteLine(String.Format("Total Shipping Amount {0}", shipAmount.ToString("C0")));
+				
+				Console.WriteLine(String.Format("Total Purchase Amount {0}", grandTotal.ToString("C0")));
 				
 				CompleteTransaction(items);
 				
@@ -140,7 +144,7 @@ namespace Inheritance16
 			public double Shipping()
 			{
 				var shipping = Price + ShippingRate;
-				Console.WriteLine(String.Format("     :{0} = {1}", ShippingRate, shipping));
+				Console.WriteLine(String.Format("     ShippingRate:{0} = {1}", ShippingRate.ToString("C0"), shipping.ToString("C0")));
 				return shipping;
 			}
 			
@@ -149,7 +153,6 @@ namespace Inheritance16
 	public class Snack : IPurchasable
 	{
 			public double Price {get; set;}
-			//public double TaxRate {get;set;}
 			
 			public void Purchase()
 			{
@@ -167,7 +170,7 @@ namespace Inheritance16
 		
 		public void Purchase()
 			{
-				Console.WriteLine(String.Format("Purchasing a tshirt for {0} in a {1} size", Price.ToString("C0"), Size));
+				Console.WriteLine(String.Format("Purchasing a tshirt for {0} + {1}in tax and {2}in shipping, in a {3} size", Price.ToString("C0"),TaxRate.ToString("C0"), ShippingRate.ToString("C0"), Size));
 			
 			}
 			
@@ -181,7 +184,7 @@ namespace Inheritance16
 			public double Shipping()
 			{
 				var shipping = Price + ShippingRate;
-				Console.WriteLine(String.Format("     :{0} = {1}", ShippingRate, shipping));
+				Console.WriteLine(String.Format("     ShippingRate:{0} = {1}", ShippingRate.ToString("C0"), shipping.ToString("C0")));
 				return shipping;
 			}
 	}
